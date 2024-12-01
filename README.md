@@ -12,3 +12,17 @@ Small Raylib project that is inspired by Cult of The Lamb.
 - The game ends when either player completely fills up their 3x3 board. The player with the higher score wins.
 
 [Rules based on description on cult-of-the-lamb wiki](https://cult-of-the-lamb.fandom.com/wiki/Knucklebones)
+
+## To Compile
+
+### Dependencies
+
+- Raylib, need to find a way to compile without cmake for windows and unix based systems
+
+### Compile
+
+Use command
+
+```Bash
+cc game.c -lraylib -lGL -lm -lpthread  -lrt -lX11
+```
