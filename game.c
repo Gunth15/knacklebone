@@ -11,10 +11,12 @@ int main(void) {
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(GRAY);
-    DrawBoards(boards, BOARD_SIZE);
+    if (IsMouseOnBoard(boards, BOARD_SIZE)) {
+      AltColumnColor(boards, GetMouseColumn(), BOARD_SIZE);
+    } else {
+      DrawBoards(boards, BOARD_SIZE);
+    }
     EndDrawing();
-
-    // if cursor is in grid squre, change row color
   }
 
   CloseWindow();
