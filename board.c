@@ -6,6 +6,16 @@
 #define PRIMARY_COLOR RED
 #define ALT_COLOR PINK
 
+#if DEBUG
+#define printdslots(ROW, COL, X, Y)                                            \
+  printf("DiceSlot %d,%d: x:%d y:%d\n", col, row, x, y)
+#define printdmouse(X_MOUSE, Y_MOUSE)                                          \
+  printf("Mouse in square with pos x:%d, y:%d\n", x_mouse_pos, y_mouse_pos)
+#else
+#define printdslots(ROW, COL, X, Y)
+#define printdmouse(X_MOUSE, Y_MOUSE)
+#endif /* if DEBUG */
+
 typedef struct {
   unsigned int value;
   int x;
@@ -23,14 +33,13 @@ void InitBoard(DiceSlot *board[], int size) {
     }
 
     for (int row = 0; row < size; ++row) {
-      int x = GetScreenWidth() / 2 + (col * (SQUARE_SIZE + 2));
+      int x =
+          (GetScreenWidth() / 2 - SQUARE_SIZE / 2) + (col * (SQUARE_SIZE + 2));
       int y = GetScreenHeight() / 4 + (row * (SQUARE_SIZE + 2));
 
       DiceSlot slot = {0, x, y, SQUARE_SIZE};
 
-#if DEBUG
-      printf("DiceSlot %d,%d: x:%d y:%d\n", col, row, x, y);
-#endif
+      printdslots(row, col, x, y);
 
       board[col][row] = slot;
     }
@@ -50,20 +59,18 @@ static int column_number;
 
 bool IsMouseOnBoard(DiceSlot *board[], int size) {
   column_number = 0;
-  int y = board[0][0].y;
   int slot_size = board[0][0].size;
+  int min_y = board[0][0].y;
+  int max_y = board[size - 1][size - 1].y + slot_size;
   int x_mouse_pos = GetMouseX();
   int y_mouse_pos = GetMouseY();
 
   for (; column_number < size; ++column_number) {
-    int end_of_slot = board[column_number][0].x + slot_size;
-    int start_of_slot = board[column_number][0].x;
-    if (x_mouse_pos > start_of_slot && x_mouse_pos < end_of_slot &&
-        y_mouse_pos < (slot_size * (size + 1)) && y_mouse_pos > y) {
-#if DEBUG
-      printf("Mouse in square with pods x:%d, y:%d\n", x_mouse_pos,
-             y_mouse_pos);
-#endif
+    int max_x = board[column_number][0].x + slot_size;
+    int min_x = board[column_number][0].x;
+    if (x_mouse_pos > min_x && x_mouse_pos < max_x && y_mouse_pos < max_y &&
+        y_mouse_pos > min_y) {
+      printdmouse(x_mouse_pos, y_mouse_pos);
       return 1;
     }
   };
