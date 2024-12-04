@@ -3,7 +3,7 @@
 #define BOARD_SIZE 3
 
 int main(void) {
-  InitWindow(800, 450, "raylib [core] example - basic window");
+  InitWindow(1000, 1000, "raylib [core] example - basic window");
 
   DiceSlot *boards[BOARD_SIZE] = {0};
   InitBoard(boards, BOARD_SIZE);

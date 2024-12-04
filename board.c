@@ -33,8 +33,8 @@ void InitBoard(DiceSlot *board[], int size) {
     }
 
     for (int row = 0; row < size; ++row) {
-      int x =
-          (GetScreenWidth() / 2 - SQUARE_SIZE / 2) + (col * (SQUARE_SIZE + 2));
+      int x = (GetScreenWidth() - (SQUARE_SIZE + 2) * size) / 2 +
+              (col * (SQUARE_SIZE + 2));
       int y = GetScreenHeight() / 4 + (row * (SQUARE_SIZE + 2));
 
       DiceSlot slot = {0, x, y, SQUARE_SIZE};
