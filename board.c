@@ -79,6 +79,17 @@ bool IsMouseOnBoard(DiceSlot *board[], int size) {
 
 int GetMouseColumn() { return column_number; }
 
+bool RollDice(DiceSlot *board[], int size, int col) {
+  int die;
+  for (die = 0; die < size && board[col][die].value != 0; ++die)
+    ;
+  if (die < size) {
+    board[col][die].value = GetRandomValue(1, 7);
+    return 1;
+  } else
+    return 0;
+}
+
 void AltColumnColor(DiceSlot *board[], int target_col, int size) {
   for (int col = 0; col < size; ++col) {
     for (int row = 0; row < size; ++row) {

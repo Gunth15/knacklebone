@@ -12,3 +12,7 @@ void AltColumnColor(DiceSlot *board[], int target_col, int size);
 // Gets the column number that the mouse was determined to be over when
 // IsCursorOnBoard was called
 int GetMouseColumn();
+
+// Rolls a dice for the selected column starting with first column of a row.
+// Returns 0 if the column is full.
+bool RollDice(DiceSlot *board[], int size, int col);
