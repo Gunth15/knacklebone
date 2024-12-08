@@ -1,3 +1,4 @@
+#include "knackle.h"
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,6 +6,7 @@
 #define DEBUG 0
 #define PRIMARY_COLOR RED
 #define ALT_COLOR PINK
+#define TEXT_COLOR BLACK
 
 #if DEBUG
 #define printdslots(ROW, COL, X, Y)                                            \
@@ -15,13 +17,6 @@
 #define printdslots(ROW, COL, X, Y)
 #define printdmouse(X_MOUSE, Y_MOUSE)
 #endif /* if DEBUG */
-
-typedef struct {
-  unsigned int value;
-  int x;
-  int y;
-  int size;
-} DiceSlot;
 
 void InitBoard(DiceSlot *board[], int size) {
   for (int col = 0; col < size; ++col) {
@@ -46,11 +41,24 @@ void InitBoard(DiceSlot *board[], int size) {
   }
 }
 
+void DrawValue(DiceSlot *slot) {
+  char *temp = malloc(3);
+  if (temp == NULL)
+    fprintf(stderr, "Could not llocate memory for drawing value");
+  sprintf(temp, "%u\n", slot->value);
+
+  int center_x = slot->x + slot->size / 2;
+  int center_y = slot->y + slot->size / 2;
+  DrawText(temp, center_x, center_y, 30, TEXT_COLOR);
+  free(temp);
+}
+
 void DrawBoards(DiceSlot *board[], int size) {
   for (int col = 0; col < size; ++col) {
     for (int row = 0; row < size; ++row) {
       DrawRectangle(board[col][row].x, board[col][row].y, board[col][row].size,
                     board[col][row].size, PRIMARY_COLOR);
+      DrawValue(&board[col][row]);
     }
   }
 }
@@ -101,6 +109,7 @@ void AltColumnColor(DiceSlot *board[], int target_col, int size) {
                       board[col][row].size, board[col][row].size,
                       PRIMARY_COLOR);
       }
+      DrawValue(&board[col][row]);
     }
   }
 }
