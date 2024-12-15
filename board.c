@@ -18,7 +18,7 @@
 #define printdmouse(X_MOUSE, Y_MOUSE)
 #endif /* if DEBUG */
 
-void InitBoard(DiceSlot *board[], int size) {
+void InitBoard(DiceSlot *board[], int size, int player) {
   for (int col = 0; col < size; ++col) {
     board[col] = (DiceSlot *)malloc(sizeof(DiceSlot) * size * 2);
 

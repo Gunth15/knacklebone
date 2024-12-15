@@ -9,7 +9,7 @@ typedef struct {
 } DiceSlot;
 
 // Initializes memory for one board with default vaues
-void InitBoard(DiceSlot *board[], int size);
+void InitBoard(DiceSlot *board[], int size, int player);
 
 // Draws a board for a player. Grid must have same number of rows and
 // columns update diceslot position on every call.
