@@ -29,8 +29,19 @@ int GetMouseColumn();
 // the column. Returns 0 if the column is full.
 bool RollDice(DiceSlot *board[], int size, int col);
 
-// Updates the score of the score board; Based on the current status of the
-// board, both ar expected to have same number of columns.
-void UpdateScore(int *score, DiceSlot **board, int size);
+// Represents the columns, socre and location
+typedef struct {
+  unsigned int value;
+  int x;
+  int y;
+} ColScore;
+
+// Initializes Scrore board
+void InitScoreBoard(ColScore *scoreboard, DiceSlot **board, int size);
+
+//  Updates the score of the score board. Based on the current status of the
+//  dice board. For more info on the scoring system, look at the README.
+void UpdateScore(ColScore *score, DiceSlot **board, int size);
+
 // Draw the scorebord
-void DrawScore(int *score, DiceSlot **board, int size);
+void DrawScore(ColScore *score, int size);

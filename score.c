@@ -1,6 +1,49 @@
 #include "knackle.h"
-void UpdateScore(int *score, DiceSlot **board, int size) {
+#include <stdio.h>
+#include <stdlib.h>
+#define TEXT_COLOR BLACK
+#define DEBUG 1
+#ifndef DEBUG
+#define debug_pos(COL, X, Y)
+#else
+#define debug_pos(COL, X, Y)                                                   \
+  printf("The co-ord of the the %d column of the score board is x:%d y:%d\n",  \
+         COL, X, Y)
+#endif /* ifndef DEBUG */
+
+void InitScoreBoard(ColScore *scoreboard, DiceSlot **board, int size) {
+  int last = size - 1;
+  int x = board[last][last].x + board[last][last].size / 2;
+  int y = board[last][last].y + board[last][last].size * (3.0 / 2.0);
   for (int i = 0; i < size; ++i) {
+    scoreboard[i].x = x - (board[last][last].size * i);
+    scoreboard[i].y = y;
+    scoreboard[i].value = 0;
+    debug_pos(i, scoreboard[i].x, scoreboard[i].y);
   }
 }
-void DrawScore(int *score, DiceSlot **board, int size);
+
+void UpdateScore(ColScore *score, DiceSlot **board, int size) {
+  for (int col = 0; col < size; ++col) {
+    int map[7] = {0, 0, 0, 0, 0, 0, 0};
+    int total = 0;
+    for (int row = 0; row < size; ++row) {
+      int key = board[col][row].value;
+      ++map[key];
+    }
+    for (int i = 0; i < 7; ++i) {
+      total += (map[i] * i) * map[i];
+    }
+    score[col].value = total;
+  }
+}
+
+void DrawScore(ColScore *score, int size) {
+
+  char *temp = malloc(3);
+  for (int i = 0; i < size; ++i) {
+    sprintf(temp, "%u\n", score[i].value);
+    DrawText(temp, score[i].x, score[i].y, 30, TEXT_COLOR);
+  }
+  free(temp);
+};

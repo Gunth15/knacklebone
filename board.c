@@ -44,7 +44,7 @@ void InitBoard(DiceSlot *board[], int size) {
 void DrawValue(DiceSlot *slot) {
   char *temp = malloc(3);
   if (temp == NULL)
-    fprintf(stderr, "Could not llocate memory for drawing value");
+    fprintf(stderr, "Could not allocate memory for drawing value");
   sprintf(temp, "%u\n", slot->value);
 
   int center_x = slot->x + slot->size / 2;
@@ -92,7 +92,7 @@ bool RollDice(DiceSlot *board[], int size, int col) {
   for (die = 0; die < size && board[col][die].value != 0; ++die)
     ;
   if (die < size) {
-    board[col][die].value = GetRandomValue(1, 7);
+    board[col][die].value = GetRandomValue(1, 6);
     return 1;
   } else
     return 0;
