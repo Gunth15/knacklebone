@@ -13,10 +13,10 @@
 
 void InitScoreBoard(ColScore *scoreboard, DiceSlot **board, int size) {
   int last = size - 1;
-  int x = board[last][last].x + board[last][last].size / 2;
-  int y = board[last][last].y + board[last][last].size * (3.0 / 2.0);
+  int x = board[0][last].x + board[0][last].size / 2;
+  int y = board[0][last].y + board[0][last].size * (3.0 / 2.0);
   for (int i = 0; i < size; ++i) {
-    scoreboard[i].x = x - (board[last][last].size * i);
+    scoreboard[i].x = x + (board[last][last].size * i);
     scoreboard[i].y = y;
     scoreboard[i].value = 0;
     debug_pos(i, scoreboard[i].x, scoreboard[i].y);
