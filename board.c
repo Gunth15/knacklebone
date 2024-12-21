@@ -2,10 +2,10 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define SQUARE_SIZE 150
+#define SQUARE_SIZE 120
 #define DEBUG 0
-#define PRIMARY_COLOR RED
-#define ALT_COLOR PINK
+#define PRIMARY_COLOR BLUE
+#define ALT_COLOR LIGHTGRAY
 #define TEXT_COLOR BLACK
 
 #if DEBUG
@@ -28,9 +28,13 @@ void InitBoard(DiceSlot *board[], int size, int player) {
     }
 
     for (int row = 0; row < size; ++row) {
+      int dif = 1;
+      if (player == 2) {
+        dif = 6;
+      }
       int x = (GetScreenWidth() - (SQUARE_SIZE + 2) * size) / 2 +
               (col * (SQUARE_SIZE + 2));
-      int y = GetScreenHeight() / 4 + (row * (SQUARE_SIZE + 2));
+      int y = GetScreenHeight() / (2 * dif) + (row * (SQUARE_SIZE + 2));
 
       DiceSlot slot = {0, x, y, SQUARE_SIZE};
 
@@ -53,7 +57,7 @@ void DrawValue(DiceSlot *slot) {
   free(temp);
 }
 
-void DrawBoards(DiceSlot *board[], int size) {
+void DrawBoard(DiceSlot *board[], int size) {
   for (int col = 0; col < size; ++col) {
     for (int row = 0; row < size; ++row) {
       DrawRectangle(board[col][row].x, board[col][row].y, board[col][row].size,

@@ -13,7 +13,7 @@ void InitBoard(DiceSlot *board[], int size, int player);
 
 // Draws a board for a player. Grid must have same number of rows and
 // columns update diceslot position on every call.
-void DrawBoards(DiceSlot *board[], int size);
+void DrawBoard(DiceSlot *board[], int size);
 
 // Alternates color of one column
 void AltColumnColor(DiceSlot *board[], int target_col, int size);
