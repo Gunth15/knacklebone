@@ -27,7 +27,9 @@ int GetMouseColumn();
 
 // Rolls a dice for the selected column starting with first row from the top of
 // the column. Returns 0 if the column is full.
-bool RollDice(DiceSlot *board[], int size, int col);
+bool PlaceRoll(DiceSlot *board[], int size, int col, int roll);
+
+int RollDice();
 
 // Represents the columns, socre and location
 typedef struct {
@@ -37,7 +39,8 @@ typedef struct {
 } ColScore;
 
 // Initializes Scrore board
-void InitScoreBoard(ColScore *scoreboard, DiceSlot **board, int size);
+void InitScoreBoardBelow(ColScore *scoreboard, DiceSlot **board, int size);
+void InitScoreBoardAbove(ColScore *scoreboard, DiceSlot **board, int size);
 
 //  Updates the score of the score board. Based on the current status of the
 //  dice board. For more info on the scoring system, look at the README.
@@ -45,3 +48,5 @@ void UpdateScore(ColScore *score, DiceSlot **board, int size);
 
 // Draw the scorebord
 void DrawScore(ColScore *score, int size);
+
+void DrawDiceWindow(int roll);

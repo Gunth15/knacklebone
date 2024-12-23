@@ -10,12 +10,14 @@
 
 #if DEBUG
 #define printdslots(ROW, COL, X, Y)                                            \
-  printf("DiceSlot %d,%d: x:%d y:%d\n", col, row, x, y)
-#define printdmouse(X_MOUSE, Y_MOUSE)                                          \
-  printf("Mouse in square with pos x:%d, y:%d\n", x_mouse_pos, y_mouse_pos)
+  printf("DiceSlot %d,%d: x:%d y:%d\n", COL, ROW, X, Y)
+#define printdmouse(X_MOUSE, Y_MOUSE, COL)                                     \
+  printf("Mouse in square with pos x:%d, y:%d in the %d column\n", X_MOUSE,    \
+         Y_MOUSE, COL)
 #else
 #define printdslots(ROW, COL, X, Y)
-#define printdmouse(X_MOUSE, Y_MOUSE)
+#define printdmouse(X_MOUSE, Y_MOUSE, COL)
+#define printdslotclicked(COL, ROll)
 #endif /* if DEBUG */
 
 void InitBoard(DiceSlot *board[], int size, int player) {
@@ -30,7 +32,7 @@ void InitBoard(DiceSlot *board[], int size, int player) {
     for (int row = 0; row < size; ++row) {
       int dif = 1;
       if (player == 2) {
-        dif = 6;
+        dif = 4;
       }
       int x = (GetScreenWidth() - (SQUARE_SIZE + 2) * size) / 2 +
               (col * (SQUARE_SIZE + 2));
@@ -82,7 +84,7 @@ bool IsMouseOnBoard(DiceSlot *board[], int size) {
     int min_x = board[column_number][0].x;
     if (x_mouse_pos > min_x && x_mouse_pos < max_x && y_mouse_pos < max_y &&
         y_mouse_pos > min_y) {
-      printdmouse(x_mouse_pos, y_mouse_pos);
+      printdmouse(x_mouse_pos, y_mouse_pos, column_number);
       return 1;
     }
   };
@@ -91,12 +93,13 @@ bool IsMouseOnBoard(DiceSlot *board[], int size) {
 
 int GetMouseColumn() { return column_number; }
 
-bool RollDice(DiceSlot *board[], int size, int col) {
+bool PlaceRoll(DiceSlot *board[], int size, int col, int roll) {
   int die;
   for (die = 0; die < size && board[col][die].value != 0; ++die)
     ;
   if (die < size) {
-    board[col][die].value = GetRandomValue(1, 6);
+    board[col][die].value = roll;
+
     return 1;
   } else
     return 0;
