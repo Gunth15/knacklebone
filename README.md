@@ -22,7 +22,7 @@ Small Raylib project that is inspired by Cult of The Lamb.
 Use command
 
 ```Bash
-cc game.c board.c -lraylib -lGL -lm -lpthread  -lrt -lX11
+cc game.c board.c draw.c score.c -lraylib -lGL -lm -lpthread  -lrt -lX11
 ```
 
 ## Future inqueries
