@@ -1,5 +1,10 @@
 #include "knackle.h"
+#include <raylib.h>
 
+typedef enum {
+  INVALID_OPONENT_COl = 200,
+  INVALID_CPU_COL = -200,
+} INVALID_COL;
 float ChanceNodeOponent(int **cpu_board, int **enemy_board, int *cpu_score,
                         int *enemy_score, int col, int size, int depth);
 // copies board's values to matrix, so they can be used in other operation wiht
@@ -42,6 +47,20 @@ void CheckDupsM(int *enemy_board[], int roll, int col, int size) {
   }
 }
 
+void CopyMatrix(int *matrix[], int *matrix_copy[], int size) {
+  for (int col = 0; col < size; ++col) {
+    for (int row = 0; row < size; ++row) {
+      matrix_copy[col][row] = matrix[col][row];
+    }
+  }
+};
+
+void CopyArray(int *matrix, int *matrix_copy, int size) {
+  for (int col = 0; col < size; ++col) {
+    matrix_copy[col] = matrix[col];
+  }
+};
+
 // calculates a node's weight using the scores of cpu and player
 int SumScore(int *cpu_score, int *enemey_score, int size) {
   int weight;
@@ -59,10 +78,21 @@ float ChanceNodeCpu(int **cpu_board, int **enemy_board, int *cpu_score,
   for (die = 0; die < size && cpu_board[die] != 0; ++die)
     ;
   if (die >= size) {
-    return -1;
+    return INVALID_CPU_COL;
   }
 
+  int **tempE, **tempC, *tempSE, *tempSC;
+  CopyMatrix(enemy_board, tempE, size);
+  CopyMatrix(cpu_board, tempC, size);
+  CopyArray(enemy_score, tempSE, size);
+  CopyArray(cpu_score, tempSC, size);
+
   for (int i = 0; i < 7; ++i) {
+    CopyMatrix(tempE, enemy_board, size);
+    CopyMatrix(tempC, cpu_board, size);
+    CopyArray(tempSE, enemy_score, size);
+    CopyArray(tempSC, cpu_score, size);
+
     cpu_board[col][die] = i;
     CheckDupsM(enemy_board, cpu_board[col][die], col, size);
     UpdateScoreM(enemy_score, enemy_board, size);
@@ -76,7 +106,11 @@ float ChanceNodeCpu(int **cpu_board, int **enemy_board, int *cpu_score,
                  depth - 1)) > node_weight)
           node_weight = new_node_weight;
 
-      weight += node_weight;
+      if (node_weight == INVALID_OPONENT_COl) {
+        weight += (float)SumScore(cpu_score, enemy_score, size);
+      } else {
+        weight += node_weight;
+      }
     }
   }
   return (float)weight / 7.0;
@@ -90,10 +124,21 @@ float ChanceNodeOponent(int **cpu_board, int **enemy_board, int *cpu_score,
   for (die = 0; die < size && enemy_board[die] != 0; ++die)
     ;
   if (die >= size) {
-    return -1;
+    return INVALID_OPONENT_COl;
   }
 
+  int **tempE, **tempC, *tempSE, *tempSC;
+  CopyMatrix(enemy_board, tempE, size);
+  CopyMatrix(cpu_board, tempC, size);
+  CopyArray(enemy_score, tempSE, size);
+  CopyArray(cpu_score, tempSC, size);
+
   for (int i = 0; i < 7; ++i) {
+    CopyMatrix(tempE, enemy_board, size);
+    CopyMatrix(tempC, cpu_board, size);
+    CopyArray(tempSE, enemy_score, size);
+    CopyArray(tempSC, cpu_score, size);
+
     enemy_board[col][die] = i;
     CheckDupsM(cpu_board, enemy_board[col][die], col, size);
     UpdateScoreM(enemy_score, enemy_board, size);
@@ -104,7 +149,11 @@ float ChanceNodeOponent(int **cpu_board, int **enemy_board, int *cpu_score,
           node_weight)
         node_weight = new_node_weight;
 
-    weight += node_weight;
+    if (node_weight == INVALID_CPU_COL) {
+      weight += (float)SumScore(cpu_score, enemy_score, size);
+    } else {
+      weight += node_weight;
+    }
   }
   return weight / 7.0;
 }

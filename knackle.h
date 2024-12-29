@@ -1,6 +1,6 @@
 #include <raylib.h>
 
-// Diseslot is reresented by one spot on the grid
+// Diseslot is reresents one square on the grid
 typedef struct {
   unsigned int value;
   int x;
