@@ -1,8 +1,6 @@
 #include "knackle.h"
 #include <stdio.h>
-#include <stdlib.h>
-#define TEXT_COLOR BLACK
-#define DEBUG 1
+#define DEBUG 0
 #ifndef DEBUG
 #define debug_pos(COL, X, Y)
 #else
@@ -69,13 +67,3 @@ void UpdateScore(ColScore *score, DiceSlot **board, int size) {
     score[col].value = total;
   }
 }
-
-void DrawScore(ColScore *score, int size) {
-
-  char *temp = malloc(3);
-  for (int i = 0; i < size; ++i) {
-    sprintf(temp, "%u\n", score[i].value);
-    DrawText(temp, score[i].x, score[i].y, 30, TEXT_COLOR);
-  }
-  free(temp);
-};

@@ -1,13 +1,8 @@
 #include "knackle.h"
-#include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #define SQUARE_SIZE 120
 #define DEBUG 0
-#define PRIMARY_COLOR BLUE
-#define ALT_COLOR LIGHTGRAY
-#define TEXT_COLOR BLACK
-
 #if DEBUG
 #define printdslots(ROW, COL, X, Y)                                            \
   printf("DiceSlot %d,%d: x:%d y:%d\n", COL, ROW, X, Y)
@@ -66,28 +61,6 @@ void ResizeBoard(DiceSlot **board, int size, int player) {
   }
 }
 
-void DrawValue(DiceSlot *slot) {
-  char *temp = malloc(3);
-  if (temp == NULL)
-    fprintf(stderr, "Could not allocate memory for drawing value");
-  sprintf(temp, "%u\n", slot->value);
-
-  int center_x = slot->x + slot->size / 2;
-  int center_y = slot->y + slot->size / 2;
-  DrawText(temp, center_x, center_y, 30, TEXT_COLOR);
-  free(temp);
-}
-
-void DrawBoard(DiceSlot *board[], int size) {
-  for (int col = 0; col < size; ++col) {
-    for (int row = 0; row < size; ++row) {
-      DrawRectangle(board[col][row].x, board[col][row].y, board[col][row].size,
-                    board[col][row].size, PRIMARY_COLOR);
-      DrawValue(&board[col][row]);
-    }
-  }
-}
-
 static int column_number;
 
 bool IsMouseOnBoard(DiceSlot *board[], int size) {
@@ -122,22 +95,6 @@ bool PlaceRoll(DiceSlot *board[], int size, int col, int roll) {
     return 1;
   } else
     return 0;
-}
-
-void AltColumnColor(DiceSlot *board[], int target_col, int size) {
-  for (int col = 0; col < size; ++col) {
-    for (int row = 0; row < size; ++row) {
-      if (col == target_col) {
-        DrawRectangle(board[col][row].x, board[col][row].y,
-                      board[col][row].size, board[col][row].size, ALT_COLOR);
-      } else {
-        DrawRectangle(board[col][row].x, board[col][row].y,
-                      board[col][row].size, board[col][row].size,
-                      PRIMARY_COLOR);
-      }
-      DrawValue(&board[col][row]);
-    }
-  }
 }
 
 void CheckDups(DiceSlot *enemy_board[], int roll, int col, int size) {
