@@ -34,6 +34,27 @@ void InitScoreBoardAbove(ColScore *scoreboard, DiceSlot **board, int size) {
   }
 }
 
+void ResizeScoreBelow(ColScore *scoreboard, DiceSlot **board, int size) {
+  int last = size - 1;
+  int x = board[0][last].x + board[0][last].size / 2;
+  int y = board[0][last].y + board[0][last].size * (3.0 / 2.0);
+  for (int i = 0; i < size; ++i) {
+    scoreboard[i].x = x + (board[last][last].size * i);
+    scoreboard[i].y = y;
+    debug_pos(i, scoreboard[i].x, scoreboard[i].y);
+  }
+}
+
+void ResizeScoreAbove(ColScore *scoreboard, DiceSlot **board, int size) {
+  int x = board[0][0].x + board[0][0].size / 2;
+  int y = board[0][0].y - board[0][0].size / (3.0 / 2.0);
+  for (int i = 0; i < size; ++i) {
+    scoreboard[i].x = x + (board[0][0].size * i);
+    scoreboard[i].y = y;
+    debug_pos(i, scoreboard[i].x, scoreboard[i].y);
+  }
+}
+
 void UpdateScore(ColScore *score, DiceSlot **board, int size) {
   for (int col = 0; col < size; ++col) {
     int map[7] = {0, 0, 0, 0, 0, 0, 0};

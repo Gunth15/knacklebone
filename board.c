@@ -21,6 +21,10 @@
 #endif /* if DEBUG */
 
 void InitBoard(DiceSlot *board[], int size, int player) {
+  int dif = 1;
+  if (player == 2) {
+    dif = 4;
+  }
   for (int col = 0; col < size; ++col) {
     board[col] = (DiceSlot *)malloc(sizeof(DiceSlot) * size * 2);
 
@@ -30,10 +34,6 @@ void InitBoard(DiceSlot *board[], int size, int player) {
     }
 
     for (int row = 0; row < size; ++row) {
-      int dif = 1;
-      if (player == 2) {
-        dif = 4;
-      }
       int x = (GetScreenWidth() - (SQUARE_SIZE + 2) * size) / 2 +
               (col * (SQUARE_SIZE + 2));
       int y = GetScreenHeight() / (2 * dif) + (row * (SQUARE_SIZE + 2));
@@ -43,6 +43,25 @@ void InitBoard(DiceSlot *board[], int size, int player) {
       printdslots(row, col, x, y);
 
       board[col][row] = slot;
+    }
+  }
+}
+
+void ResizeBoard(DiceSlot **board, int size, int player) {
+  int dif = 1;
+  if (player == 2) {
+    dif = 4;
+  }
+  for (int col = 0; col < size; ++col) {
+    for (int row = 0; row < size; ++row) {
+      int x = (GetScreenWidth() - (SQUARE_SIZE + 2) * size) / 2 +
+              (col * (SQUARE_SIZE + 2));
+      int y = GetScreenHeight() / (2 * dif) + (row * (SQUARE_SIZE + 2));
+
+      printdslots(row, col, x, y);
+
+      DiceSlot slot = board[col][row];
+      slot.x = x, slot.y = y;
     }
   }
 }
@@ -117,6 +136,15 @@ void AltColumnColor(DiceSlot *board[], int target_col, int size) {
                       PRIMARY_COLOR);
       }
       DrawValue(&board[col][row]);
+    }
+  }
+}
+
+void CheckDups(DiceSlot *enemy_board[], int roll, int col, int size) {
+  int match;
+  for (int i = 0; i < size; ++i) {
+    if (enemy_board[col][i].value == roll) {
+      enemy_board[col][i].value = 0;
     }
   }
 }

@@ -11,6 +11,9 @@ typedef struct {
 // Initializes memory for one board with default vaues
 void InitBoard(DiceSlot *board[], int size, int player);
 
+// Resize board if window size changes
+void ResizeBoard(DiceSlot **board, int size, int player);
+
 // Draws a board for a player. Grid must have same number of rows and
 // columns update diceslot position on every call.
 void DrawBoard(DiceSlot *board[], int size);
@@ -29,6 +32,10 @@ int GetMouseColumn();
 // the column. Returns 0 if the column is full.
 bool PlaceRoll(DiceSlot *board[], int size, int col, int roll);
 
+// Check for values on the enemy board that equal the new roll and "delete"(set
+// them to zero)
+void CheckDups(DiceSlot *enemy_board[], int roll, int col, int size);
+
 int RollDice();
 
 // Represents the columns, socre and location
@@ -41,6 +48,10 @@ typedef struct {
 // Initializes Scrore board
 void InitScoreBoardBelow(ColScore *scoreboard, DiceSlot **board, int size);
 void InitScoreBoardAbove(ColScore *scoreboard, DiceSlot **board, int size);
+
+// Resize the scoreboard if window size changes
+void ResizeScoreAbove(ColScore *scoreboard, DiceSlot **board, int size);
+void ResizeScoreBelow(ColScore *scoreboard, DiceSlot **board, int size);
 
 //  Updates the score of the score board. Based on the current status of the
 //  dice board. For more info on the scoring system, look at the README.
