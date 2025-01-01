@@ -61,3 +61,12 @@ void UpdateScore(ColScore *score, DiceSlot **board, int size);
 void DrawScore(ColScore *score, int size);
 
 void DrawDiceWindow(int roll);
+
+// Turns dice board into matrix
+void BoardToMatrix(DiceSlot **board1, int **matrix, int size);
+// Turns score board into matrix
+void ScoreToMatrix(ColScore *score1, int *matrix, int size);
+
+// Determines best move to make using a mix of expectimax and minimax algorithm
+int MakeNextMove(int **cpu_board, int **enemy_board, int *cpu_score,
+                 int *enemy_score, int size, int roll, int depth);
