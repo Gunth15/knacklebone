@@ -4,9 +4,9 @@
 #define DEBUG 1
 #if DEBUG
 #define printdMatrix(MATRIX, SIZE)                                             \
-  for (int row = 0; row < size; ++row) {                                       \
-    for (int col = 0; col < size; ++col)                                       \
-      printf("%d", MATRIX[col][row]);                                          \
+  for (int row = 0; row < SIZE; ++row) {                                       \
+    for (int col = 0; col < SIZE; ++col)                                       \
+      printf("|\t%d\t|", MATRIX[col][row]);                                    \
     printf("\n");                                                              \
   }
 #define printdTotalWeight(WEIGHT) printf("Total weight: %f\n", WEIGHT)
@@ -33,14 +33,16 @@
   #define printdOpponent(ROLL, WEIGHT, MATRIX, SIZE)
 #endif
 
+// WARNING: The following does not che check if memeory is properly allocated
+// after a call to malloc
+
 // Invalid Col positions
 typedef enum {
   INVALID_OPONENT_COl = 200,
   INVALID_CPU_COL = -200,
 } INVALID_COL;
 
-float ChanceNodeOponent(int **cpu_board, int **enemy_board, int *cpu_score,
-                        int *enemy_score, int col, int size, int depth);
+float ChanceNodeOponent(GameState *game, int col, int depth);
 
 // copies board's values to matrix, so they can be used in other operation wiht
 // minimal information transfer
@@ -95,172 +97,170 @@ void CopyArray(int *matrix, int *matrix_copy, int size) {
   }
 };
 
+void CopyGameState(GameState *game, GameState *game_copy) {
+  CopyMatrix(game->cpu_board, game_copy->cpu_board, game->size);
+  CopyMatrix(game->enemy_board, game_copy->enemy_board, game->size);
+  CopyArray(game->cpu_score, game_copy->cpu_score, game->size);
+  CopyArray(game->enemy_score, game_copy->enemy_score, game->size);
+};
+
 // calculates a node's weight using the scores of cpu and player
 int SumScore(int *cpu_score, int *enemey_score, int size) {
-  int weight;
-  for (int i = 0; i < size; ++size) {
-    weight += (cpu_score[i] - enemey_score[i]);
+  int total = 0;
+  for (int i = 0; i < size; ++i) {
+    total += (cpu_score[i] - enemey_score[i]);
   }
-  return weight;
+  return total;
 }
 
-float ChanceNodeCpu(int **cpu_board, int **enemy_board, int *cpu_score,
-                    int *enemy_score, int col, int size, int depth) {
+float ChanceNodeCpu(GameState *game, int col, int depth) {
   int die;
-  float weight, node_weight, new_node_weight;
+  float weight = 0.0, node_weight = INVALID_OPONENT_COl, new_node_weight = 0.0;
   // get next open die position
-  for (die = 0; die < size && cpu_board[col][die] != 0; ++die)
+  for (die = 0; die < game->size && game->cpu_board[col][die] != 0; ++die)
     ;
-  if (die >= size) {
+  if (die >= game->size) {
     return INVALID_CPU_COL;
   }
 
-  int **tempE = malloc(sizeof(int *) * size),
-      **tempC = malloc(sizeof(int *) * size),
-      *tempSE = malloc(sizeof(int *) * size),
-      *tempSC = malloc(sizeof(int *) * size);
-  for (int col = 0; col < size; ++col) {
-    tempC[col] = malloc(sizeof(int) * size);
-    tempE[col] = malloc(sizeof(int) * size);
+  GameState temp = {
+      .cpu_board = malloc(sizeof(int *) * game->size),
+      .enemy_board = malloc(sizeof(int *) * game->size),
+      .cpu_score = malloc(sizeof(int *) * game->size),
+      .enemy_score = malloc(sizeof(int *) * game->size),
+  };
+
+  for (int col = 0; col < game->size; ++col) {
+    temp.cpu_board[col] = malloc(sizeof(int) * game->size);
+    temp.enemy_board[col] = malloc(sizeof(int) * game->size);
   }
 
-  CopyMatrix(enemy_board, tempE, size);
-  CopyMatrix(cpu_board, tempC, size);
-  CopyArray(enemy_score, tempSE, size);
-  CopyArray(cpu_score, tempSC, size);
+  CopyGameState(game, &temp);
 
   for (int i = 0; i < 7; ++i) {
-    CopyMatrix(tempE, enemy_board, size);
-    CopyMatrix(tempC, cpu_board, size);
-    CopyArray(tempSE, enemy_score, size);
-    CopyArray(tempSC, cpu_score, size);
+    CopyGameState(&temp, game);
 
-    cpu_board[col][die] = i;
+    game->cpu_board[col][die] = i;
 
-    CheckDupsM(enemy_board, cpu_board[col][die], col, size);
-    UpdateScoreM(enemy_score, enemy_board, size);
-    UpdateScoreM(cpu_score, cpu_board, size);
-    if (depth > 0) {
-      weight += (float)SumScore(cpu_score, enemy_score, size);
+    CheckDupsM(game->enemy_board, game->cpu_board[col][die], col, game->size);
+    UpdateScoreM(game->enemy_score, game->enemy_board, game->size);
+    UpdateScoreM(game->cpu_score, game->cpu_board, game->size);
+    if (depth <= 0) {
+      weight = (float)SumScore(game->cpu_score, game->enemy_score, game->size);
     } else {
-      for (int ncol = 0; ncol < size; ++ncol)
-        if ((new_node_weight = ChanceNodeOponent(
-                 cpu_board, enemy_board, cpu_score, enemy_score, ncol, size,
-                 depth - 1)) > node_weight)
+      for (int ncol = 0; ncol < game->size; ++ncol)
+        if ((new_node_weight = ChanceNodeOponent(game, col, depth - 1)) >
+            node_weight)
           node_weight = new_node_weight;
 
       if (node_weight == INVALID_OPONENT_COl) {
-        node_weight = (float)SumScore(cpu_score, enemy_score, size);
+        node_weight =
+            (float)SumScore(game->cpu_score, game->enemy_score, game->size);
       }
       weight += node_weight;
-      printdChance(col, node_weight, cpu_board, size);
+      printdChance(col, node_weight, game->cpu_board, game->size);
     }
   }
   printdTotalWeight(weight / 7.0);
-  free(tempE), free(tempC), free(tempSE), free(tempSC);
+  free(temp.enemy_board), free(temp.cpu_board), free(temp.cpu_score),
+      free(temp.enemy_score);
   return weight / 7.0;
 }
 
-float ChanceNodeOponent(int **cpu_board, int **enemy_board, int *cpu_score,
-                        int *enemy_score, int col, int size, int depth) {
+float ChanceNodeOponent(GameState *game, int col, int depth) {
   int die;
-  float weight, node_weight, new_node_weight = 0.0;
+  float weight = 0.0, node_weight = INVALID_CPU_COL, new_node_weight = 0.0;
   // get next open die position
-  for (die = 0; die < size && enemy_board[col][die] != 0; ++die)
+  for (die = 0; die < game->size && game->enemy_board[col][die] != 0; ++die)
     ;
-  if (die >= size) {
+  if (die >= game->size) {
     return INVALID_OPONENT_COl;
   }
 
-  int **tempE = malloc(sizeof(int *) * size),
-      **tempC = malloc(sizeof(int *) * size),
-      *tempSE = malloc(sizeof(int *) * size),
-      *tempSC = malloc(sizeof(int *) * size);
-  for (int col = 0; col < size; ++col) {
-    tempC[col] = malloc(sizeof(int) * size);
-    tempE[col] = malloc(sizeof(int) * size);
+  GameState temp = {
+      .cpu_board = malloc(sizeof(int *) * game->size),
+      .enemy_board = malloc(sizeof(int *) * game->size),
+      .cpu_score = malloc(sizeof(int *) * game->size),
+      .enemy_score = malloc(sizeof(int *) * game->size),
+  };
+
+  for (int col = 0; col < game->size; ++col) {
+    temp.cpu_board[col] = malloc(sizeof(int) * game->size);
+    temp.enemy_board[col] = malloc(sizeof(int) * game->size);
   }
 
-  CopyMatrix(enemy_board, tempE, size);
-  CopyMatrix(cpu_board, tempC, size);
-  CopyArray(enemy_score, tempSE, size);
-  CopyArray(cpu_score, tempSC, size);
+  CopyGameState(game, &temp);
 
   for (int i = 0; i < 7; ++i) {
-    CopyMatrix(tempE, enemy_board, size);
-    CopyMatrix(tempC, cpu_board, size);
-    CopyArray(tempSE, enemy_score, size);
-    CopyArray(tempSC, cpu_score, size);
+    CopyGameState(&temp, game);
 
-    enemy_board[col][die] = i;
+    game->enemy_board[col][die] = i;
 
-    CheckDupsM(cpu_board, enemy_board[col][die], col, size);
-    UpdateScoreM(enemy_score, enemy_board, size);
-    UpdateScoreM(cpu_score, cpu_board, size);
-    for (int ncol = 0; ncol < size; ++ncol)
-      if ((new_node_weight = ChanceNodeCpu(cpu_board, enemy_board, cpu_score,
-                                           enemy_score, ncol, size, depth)) <
-          node_weight)
+    CheckDupsM(game->cpu_board, game->enemy_board[col][die], col, game->size);
+    UpdateScoreM(game->enemy_score, game->enemy_board, game->size);
+    UpdateScoreM(game->cpu_score, game->cpu_board, game->size);
+    for (int ncol = 0; ncol < game->size; ++ncol) {
+      if ((new_node_weight = ChanceNodeCpu(game, ncol, depth)) < node_weight)
         node_weight = new_node_weight;
-
-    if (node_weight == INVALID_CPU_COL) {
-      node_weight = (float)SumScore(cpu_score, enemy_score, size);
     }
 
+    if (node_weight == INVALID_CPU_COL) {
+      node_weight =
+          (float)SumScore(game->cpu_score, game->enemy_score, game->size);
+    }
+
+    printdOpponent(col, node_weight, game->enemy_board, game->size);
     weight += node_weight;
-    printdChance(col, node_weight, cpu_board, size);
   }
-  free(tempE), free(tempC), free(tempSE), free(tempSC);
+
+  free(temp.enemy_board), free(temp.cpu_board), free(temp.cpu_score),
+      free(temp.enemy_score);
+  printdTotalWeight(weight / 7.0);
   return weight / 7.0;
 }
 
-int MakeNextMove(int **cpu_board, int **enemy_board, int *cpu_score,
-                 int *enemy_score, int size, int roll, int depth) {
+int MakeNextMove(GameState *game, int roll, int depth) {
   int best_move = 0, die = 0;
-  float best_child = 0.0, child = 0.0;
+  float best_child = INVALID_CPU_COL, child = 0.0;
 
-  ;
-  int **tempE = malloc(sizeof(int *) * size),
-      **tempC = malloc(sizeof(int *) * size),
-      *tempSE = malloc(sizeof(int *) * size),
-      *tempSC = malloc(sizeof(int *) * size);
-  for (int col = 0; col < size; ++col) {
-    tempC[col] = malloc(sizeof(int) * size);
-    tempE[col] = malloc(sizeof(int) * size);
+  GameState temp = {
+      .cpu_board = malloc(sizeof(int *) * game->size),
+      .enemy_board = malloc(sizeof(int *) * game->size),
+      .cpu_score = malloc(sizeof(int *) * game->size),
+      .enemy_score = malloc(sizeof(int *) * game->size),
+  };
+
+  for (int col = 0; col < game->size; ++col) {
+    temp.cpu_board[col] = malloc(sizeof(int) * game->size);
+    temp.enemy_board[col] = malloc(sizeof(int) * game->size);
   }
-  CopyMatrix(enemy_board, tempE, size);
-  CopyMatrix(cpu_board, tempC, size);
-  CopyArray(enemy_score, tempSE, size);
-  CopyArray(cpu_score, tempSC, size);
-  for (int col = 0; col < size; ++col) {
-    for (die = 0; die < size && cpu_board[col][die] != 0; ++die)
+
+  CopyGameState(game, &temp);
+
+  for (int col = 0; col < game->size; ++col) {
+    for (die = 0; die < game->size && game->cpu_board[col][die] != 0; ++die)
       ;
-    if (die >= size)
+    if (die >= game->size)
       ;
     else {
-      CopyMatrix(tempE, enemy_board, size);
-      CopyMatrix(tempC, cpu_board, size);
-      CopyArray(tempSE, enemy_score, size);
-      printf("Bro I hat that sound\n");
-      CopyArray(tempSC, cpu_score, size);
+      CopyGameState(&temp, game);
 
-      cpu_board[col][die] = roll;
-      printdMove(roll, col, cpu_board, size);
+      game->cpu_board[col][die] = roll;
+      printdMove(roll, col, game->cpu_board, game->size);
 
-      CheckDupsM(cpu_board, enemy_board[col][die], col, size);
-      UpdateScoreM(enemy_score, enemy_board, size);
-      UpdateScoreM(cpu_score, cpu_board, size);
+      CheckDupsM(game->cpu_board, game->enemy_board[col][die], col, game->size);
+      UpdateScoreM(game->enemy_score, game->enemy_board, game->size);
+      UpdateScoreM(game->cpu_score, game->cpu_board, game->size);
 
-      if ((child = ChanceNodeOponent(cpu_board, enemy_board, cpu_score,
-                                     enemy_score, col, size, depth - 1)) >
-          best_child) {
+      if ((child = ChanceNodeOponent(game, col, depth - 1)) > best_child) {
 
         best_child = child;
         best_move = col;
       }
     }
   }
-  printdBest(roll, best_move, best_child);
-  free(tempE), free(tempC), free(tempSE), free(tempSC);
+  free(temp.enemy_board), free(temp.cpu_board), free(temp.cpu_score),
+      free(temp.enemy_score);
+  printdBest(roll, best_move + 1, best_child);
   return best_move;
 }
