@@ -34,7 +34,7 @@ bool PlaceRoll(DiceSlot *board[], int size, int col, int roll);
 
 // Check for values on the enemy board that equal the new roll and "delete"(set
 // them to zero)
-void CheckDups(DiceSlot *enemy_board[], int roll, int col, int size);
+void CheckDups(DiceSlot *enemy_board[], unsigned int roll, int col, int size);
 
 int RollDice();
 

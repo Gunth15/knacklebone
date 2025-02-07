@@ -55,8 +55,8 @@ void ResizeBoard(DiceSlot **board, int size, int player) {
 
       printdslots(row, col, x, y);
 
-      DiceSlot slot = board[col][row];
-      slot.x = x, slot.y = y;
+      DiceSlot *slot = &board[col][row];
+      slot->x = x, slot->y = y;
     }
   }
 }
@@ -97,7 +97,7 @@ bool PlaceRoll(DiceSlot *board[], int size, int col, int roll) {
     return 0;
 }
 
-void CheckDups(DiceSlot *enemy_board[], int roll, int col, int size) {
+void CheckDups(DiceSlot *enemy_board[], unsigned int roll, int col, int size) {
   int match;
   for (int i = 0; i < size; ++i) {
     if (enemy_board[col][i].value == roll) {

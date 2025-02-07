@@ -39,6 +39,7 @@
 #define printdBest(WEIGHT, COL)
 #define printdMove(MATRIX, SIZE) printdMatrix(MATRIX, SIZE)
 #define printdChance(COL, WEIGHT)
+#define printdTotalWeight(WEIGHT)
 #define printdOpponent(COL, WEIGHT)
 #define printdNewCol()
 #define printdNewAG(NUM)
