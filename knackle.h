@@ -8,6 +8,12 @@ typedef struct {
   int size;
 } DiceSlot;
 
+// Represent generiec information for Dice img.
+typedef struct {
+  Texture2D texture;
+  Vector2 position;
+} DiceImg;
+
 // Initializes memory for one board with default vaues
 void InitBoard(DiceSlot *board[], int size, int player);
 
@@ -16,10 +22,10 @@ void ResizeBoard(DiceSlot **board, int size, int player);
 
 // Draws a board for a player. Grid must have same number of rows and
 // columns update diceslot position on every call.
-void DrawBoard(DiceSlot *board[], int size);
+void DrawBoard(DiceSlot *board[], DiceImg *img, int size);
 
 // Alternates color of one column
-void AltColumnColor(DiceSlot *board[], int target_col, int size);
+void AltColumnColor(DiceSlot *board[], DiceImg *img, int target_col, int size);
 
 // Checks if the mouse is on the board or not
 bool IsMouseOnBoard(DiceSlot *board[], int size);
@@ -60,7 +66,7 @@ void UpdateScore(ColScore *score, DiceSlot **board, int size);
 // Draw the scorebord
 void DrawScore(ColScore *score, int size);
 
-void DrawDiceWindow(int roll);
+void DrawDiceWindow(DiceImg *img, int roll);
 
 // Turns dice board into matrix
 void BoardToMatrix(DiceSlot **board1, int **matrix, int size);
@@ -79,3 +85,9 @@ typedef struct {
 
 // Determines best move to make using a mix of expectimax and minimax algorithm
 int MakeNextMove(GameState *game, int roll, int depth);
+
+// Initializes png set for dice
+DiceImg InitDiceImg();
+
+// Draws the dice Image
+void DrawDiceImg(DiceImg *img, int dice_num, Rectangle destination);

@@ -1,7 +1,6 @@
 #include "knackle.h"
-#include <stdio.h>
-#define DEBUG 0
-#ifndef DEBUG
+#define DEBUG 1
+#if DEBUG
 #define debug_pos(COL, X, Y)
 #else
 #define debug_pos(COL, X, Y)                                                   \
@@ -65,5 +64,14 @@ void UpdateScore(ColScore *score, DiceSlot **board, int size) {
       total += (map[i] * i) * map[i];
     }
     score[col].value = total;
+  }
+}
+
+// Removes dups from specified board
+void CheckDups(DiceSlot *enemy_board[], unsigned int roll, int col, int size) {
+  for (int i = 0; i < size; ++i) {
+    if (enemy_board[col][i].value == roll) {
+      enemy_board[col][i].value = 0;
+    }
   }
 }
