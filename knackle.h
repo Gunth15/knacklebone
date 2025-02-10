@@ -59,9 +59,15 @@ void InitScoreBoardAbove(ColScore *scoreboard, DiceSlot **board, int size);
 void ResizeScoreAbove(ColScore *scoreboard, DiceSlot **board, int size);
 void ResizeScoreBelow(ColScore *scoreboard, DiceSlot **board, int size);
 
+// Checks to see if board has open spaces
+bool IsBoardFull(DiceSlot **board, int size);
+
 //  Updates the score of the score board. Based on the current status of the
 //  dice board. For more info on the scoring system, look at the README.
 void UpdateScore(ColScore *score, DiceSlot **board, int size);
+
+// Decides winner 0=p1, 1=p2
+bool DecideWinner(ColScore *p1_score, ColScore *p2_score, int size);
 
 // Draw the scorebord
 void DrawScore(ColScore *score, int size);

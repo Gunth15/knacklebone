@@ -1,4 +1,5 @@
 #include "knackle.h"
+#include <stdio.h>
 #define DEBUG 1
 #if DEBUG
 #define debug_pos(COL, X, Y)
@@ -74,4 +75,16 @@ void CheckDups(DiceSlot *enemy_board[], unsigned int roll, int col, int size) {
       enemy_board[col][i].value = 0;
     }
   }
+}
+
+// 0 = p1 wins , 1 = p2 wins
+bool DecideWinner(ColScore *p1_score, ColScore *p2_score, int size) {
+  int p1 = 0;
+  int p2 = 0;
+  for (int i = 0; i < size; i++) {
+    p1 += p1_score[i].value;
+    p2 += p2_score[i].value;
+  }
+  printf("Player one has a score of %d and player 2 has a score of %d", p1, p2);
+  return p1 <= p2;
 }

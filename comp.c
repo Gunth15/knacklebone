@@ -1,7 +1,7 @@
 #include "knackle.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 #define printdMatrix(MATRIX, SIZE)                                             \
   for (int row = 0; row < SIZE; ++row) {                                       \
@@ -36,18 +36,18 @@
 #else
 #define printdMatrix(MATRIX, SIZE)
 #define printdweight(WEIGHT)
-#define printdBest(WEIGHT, COL)
-#define printdMove(MATRIX, SIZE) printdMatrix(MATRIX, SIZE)
+#define printdBest(ROLL, WEIGHT, COL)
+#define printdMove(ROLL, COL, MATRIX, SIZE) printdMatrix(MATRIX, SIZE)
 #define printdChance(COL, WEIGHT)
 #define printdTotalWeight(WEIGHT)
 #define printdOpponent(COL, WEIGHT)
-#define printdNewCol()
+#define printdNewCol(COL)
 #define printdNewAG(NUM)
 #define printdEnemyMatrix(MATRIX, SIZE)
 #define printdCPUMatrix(MATRIX, SIZE)
 #endif
 
-// WARNING: The following does not che check if memeory is properly allocated
+// WARNING: The following does not check if memeory is properly allocated
 // after a call to malloc
 
 // Invalid Col positions
